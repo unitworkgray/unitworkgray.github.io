@@ -33,4 +33,97 @@ $(document).ready(function(){
 
     toggleSlide ('.catalog-item__link');
     toggleSlide ('.catalog-item__back');
+
+    //Modal
+
+    $('[data-modal=consultation]').on('click', function() {
+        $('.overlay, #consultation').fadeIn('slow');
+    });
+    $('.modal__close').on('click', function() {
+        $('.overlay, #consultatin, #order, #thanks').fadeOut();
+    });
+    $('.button_mini').on('click', function() {
+        $('.overlay, #order').fadeIn('slow');
+    });
+
+    $('.button_mini').each(function (i) {
+        $(this).on('click', function() {
+            $('#order .modal__descr').text($('.catalog-item__subtitle').eq(i).text());
+            $('.overlay, #order').fadeIn('slow');
+        });
+    });
+
+    //Valide
+
+	function validatForms(form){
+		$(form).validate({
+			rules: {
+				name: {
+					required: true,
+					minlength: 2
+				},
+				phone: "required",
+				email: {
+					required: true,
+					email: true
+				}
+			},
+			messages: {
+				name: {
+					required: "Введите свое имя",
+					minlength: jQuery.validator.format("Введите {0} символов!")
+				},
+				phone: "Введите номер телефона",
+				email: {
+					required: "Введите адрес почты",
+					email: "Введите правильно адрес почты"
+				}
+			}
+		});
+	};
+
+	validatForms('#consultation-form');
+	validatForms('#consultation form');
+	validatForms('#order form');
+
+    //Mask
+
+    $('input[name=phone]').mask("+7 (999) 999-99-99");
+
+    //mail-tracker
+
+    $('form').submit(function(e) {
+        e.preventDefault();
+        $.ajax({
+            type: "POST",
+            url: "mailer/smart.php",
+            data: $(this).serialize()
+        }).done(function() {
+            $(this).find("input").val("");
+            $('#consultation, #order').fadeOut();
+            $('.overlay, #thanks').fadeIn('slow');
+
+            $('form').triger('reset');
+        });
+        return false;
+    });
+
+    //Smooth scroll and pageup
+
+    $(window).scroll(function() {
+        if ($(this).scrollTop() > 1600) {
+            $('.pageup').fadeIn();
+        } else {
+            $('.pageup').fadeOut();
+        }
+    });
+
+    // Sloe animation
+    $("a[href=#up]").click(function(){
+        var _href = $(this).attr("href");
+        $("html, body").animate({scrollTop: $(_href).offset().top+"px"});
+        return false;
+    });
+
+
 });
